@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Draw Annotation</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+        <script src="js/canvas.js" type="text/javascript"></script>
+        <script src="js/jquery-1.7.min.js" type="text/javascript"></script>        
+        <link rel="stylesheet" type="text/css" href="css/style.css">        
+    </head>
+
+    <body>
+        
+            <div id="video_wrap">
+                <canvas id='canvas'></canvas>
+                <video id="draw_window"></video>
+
+                <script type="text/javascript">
+
+                    var videoWidth = 420;
+                    var videoHeight = 320;
+
+                    var canvas = $('#canvas').get(0);
+                    var video = $('#draw_window').get(0);
+                    var ctx = canvas.getContext('2d');
+                    
+
+                    //main associative array, key - current second,  value - data image-data
+                    //if we want put last moment recording - point[n] = 0
+
+                    var point = new Array();
+
+                    function startRecord() {
+                         point[Math.ceil(video.currentTime)] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                         $('#start_record').attr('disabled', 'disabled');
+                         $('#stop_record').removeAttr('disabled');
+                    }
+
+                    function stopRecord() {
+
+                         $('#start_record').removeAttr('disabled');
+                         $('#stop_record').attr('disabled', 'disabled');
+                    }
+
+                    function clearAnnotation() {
+                        ctx.clearRect (0 , 0 , canvas.width ,canvas.height);
+                    }
+
+                     function listen() {
+
+                         var key = Math.ceil(video.currentTime);
+
+                         if (video.paused || video.ended) {
+                             return false
+                         }
+
+                         console.log("Element: ", key, point[key]);
+
+                         if (point[key]) {
+                             ctx.putImageData(point[key], 0, 0);
+                         }
+
+                         setTimeout(listen, 1000);
+
+                        return true;
+                    }
+
+                    video.onplay = function() {
+                        var key = Math.ceil(video.currentTime);
+                        point[key] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        console.log("Element", key);
+                        listen();
+                        video.paused = true;
+                    }
+
+                    video.onended = function() {
+                        clearAnnotation();
+                    }
+
+                    $(document).ready(function(){
+
+                        $('#video_wrap').css('width', videoWidth);
+                        $('#video_wrap').css('height', videoHeight);
+
+                        $('#draw_window').attr('width', videoWidth);
+                        $('#draw_window').attr('height', videoHeight);
+                    
+                        var video = $('#draw_window').get(0);
+                        video.src = 'mousepointer.ogv';
+                        video.id = 'draw_window';
+                        video.controls = true;
+
+
+                        canvas.width = videoWidth;
+                        canvas.height = videoHeight  - 27;
+
+                        Canva.init('canvas', canvas.width, canvas.height);
+
+                        $('#defaultExample').crayonbox();
+
+
+                    })
+
+                    $('#clear').click(function(){
+                            clearAnnotation();
+                    })
+                    
+                </script>
+            </div>
+            <div id ="manage_wrap">
+                <form name="save_image" action="POST">
+                    <fieldset>
+                        <legend>Setting:</legend>
+
+                            <div class="clear"></div>
+                            <button id="clear" name ="clear" type="button" >Clear</button>
+                            <button id="save" name ="save" type="submit" >Save</button>
+                      </fieldset>
+                </form>
+            </div>        
+    </body>
+
+</html>
+

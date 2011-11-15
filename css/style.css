@@ -1,0 +1,67 @@
+html { background: #eee; }
+body {
+	width: 100%;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 0.9em;
+	line-height: 1.2;
+	color: #222;
+}
+
+a { color: #227; }
+
+pre { border: 1px #ddd solid; background: #FF9; font-size: 1.2em; padding: 1em; }
+
+#canvas {
+	position: absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	cursor: crosshair;
+}
+
+#tools
+{
+	position: absolute;
+	display: fixed;
+	top: 0px;
+	left: 0px;
+	cursor: default;
+}
+
+#video_wrap {
+    position: relative;
+    float: left;
+}
+
+#video_wrap videp {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#manage_wrap {
+    float: left;
+    padding-left: 10px;
+}
+
+.clear {
+    height: 0;
+    overflow: hidden;
+    float: none;
+    width: 0;
+}
+
+#manage_wrap form a {
+    text-decoration: none;
+}
+
+#manage_wrap form a:hover {
+    text-decoration: underline;
+}
+
+#manage_wrap form input {
+    clear: both;
+}
+
+
