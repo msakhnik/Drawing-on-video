@@ -49,6 +49,7 @@ pre { border: 1px #ddd solid; background: #FF9; font-size: 1.2em; padding: 1em; 
     height: 0;
     overflow: hidden;
     float: none;
+    clear: both;
     width: 0;
 }
 
@@ -62,6 +63,53 @@ pre { border: 1px #ddd solid; background: #FF9; font-size: 1.2em; padding: 1em; 
 
 #manage_wrap form input {
     clear: both;
+}
+
+#manage_wrap form label {
+    display: block;
+    width: 28px;
+}
+
+#picker {
+    float: left;
+    margin-bottom: 10px;
+}
+
+#erase1 {
+    background: url(../img/eraser.png) no-repeat top right;
+    border: 1px solid #d5d5d5;
+    display: block;
+    float: left;
+    height: 16px;
+    opacity: 0.5;
+    width: 16px;
+}
+
+#size {
+    margin-bottom: 10px;
+}
+
+#picker label {
+    float:left;
+    margin-right: 28px;
+}
+
+#draw_pencil {
+    float: left;
+    height: 16px;
+    width: 16px;
+}
+
+#erase{
+    float: left;
+    margin-bottom: 10px;
+}
+
+#erase span {
+    display: block;
+    float:left;
+    margin-right: 24px;
+    width: 32px;
 }
 
 

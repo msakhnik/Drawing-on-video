@@ -2,7 +2,7 @@
 function ie_event(e)
 {
 	if (e === undefined)
-		{ return window.event; };
+		{return window.event;};
 	return e;
 }
 
@@ -24,7 +24,7 @@ Canva.init = function(id, width, height)
 
 	this.selectedColor = '#000000';
 	this.selectedFillColor = '#FFFFFF';
-	this.selectedWidth = 8;
+	this.selectedWidth = 1;
 
 	this.tool = Pencil;
 	this.drawing = false;
@@ -92,6 +92,8 @@ var Pencil = {};
 
 Pencil.start = function(evnt)
 {
+
+    console.log("pencilstart");
 	Pencil.x = evnt.clientX;
 	Pencil.y = evnt.clientY;
 
@@ -100,7 +102,7 @@ Pencil.start = function(evnt)
     Canva.ctx.lineWidth = Canva.selectedWidth;
     Canva.ctx.moveTo(Pencil.x, Pencil.y);
 
-    Canva.drawing = true;    
+    Canva.drawing = true;
 };
 
 Pencil.finish = function(evnt)
@@ -119,6 +121,39 @@ Pencil.move = function(evnt)
 	Canva.ctx.lineTo(Pencil.x, Pencil.y);
 	Canva.ctx.stroke();
 	Canva.ctx.moveTo(Pencil.x, Pencil.y);
+};
+
+var Erase = {};
+
+Erase.start = function(evnt)
+{
+    Erase.x = evnt.clientX;
+    Erase.y = evnt.clientY;
+    console.log("x=", Erase.x);
+    console.log("y=", Erase.y);
+
+    Canva.ctx.beginPath();
+    Canva.ctx.clearRect(Erase.x - Canva.selectedWidth, Erase.y - Canva.selectedWidth, Canva.selectedWidth, Canva.selectedWidth);
+
+    Canva.drawing = true;
+}
+
+Erase.finish = function(evnt)
+{
+    console.log("fifnish");
+	Erase.x = evnt.clientX;
+    Erase.y = evnt.clientY;
+	Canva.ctx.clearRect(Erase.x - Canva.selectedWidth, Erase.y - Canva.selectedWidth, Canva.selectedWidth, Canva.selectedWidth);
+
+	Canva.drawing = false;
+};
+
+Erase.move = function(evnt)
+{
+    console.log("move");
+	Erase.x = evnt.clientX;
+    Erase.y = evnt.clientY;
+	Canva.ctx.clearRect(Erase.x - Canva.selectedWidth, Erase.y - Canva.selectedWidth, Canva.selectedWidth, Canva.selectedWidth);
 };
 
 /**********************************************************************/
