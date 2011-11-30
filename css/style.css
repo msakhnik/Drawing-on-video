@@ -18,6 +18,7 @@ pre { border: 1px #ddd solid; background: #FF9; font-size: 1.2em; padding: 1em; 
 	left: 0px;
 	right: 0px;
 	cursor: crosshair;
+        z-index: 10;
 }
 
 #tools
