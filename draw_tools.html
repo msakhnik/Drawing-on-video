@@ -4,7 +4,6 @@
     <head>
         <title>Annotation</title>
         <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-        <!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
         <script src="js/canvas.js" type="text/javascript"></script>
         <script src="js/jquery-1.7.min.js" type="text/javascript"></script>
         <script type="text/javascript" src="js/jquery.colorPicker.js"></script>        
@@ -21,8 +20,6 @@
 
                 <script type="text/javascript">
 
-                    var videoWidth = 420;
-                    var videoHeight = 320;
 
                     var canvas = $('#canvas').get(0);
                     var video = $('#draw_window').get(0);
@@ -30,21 +27,8 @@
                     
 
                     //main associative array, key - current second,  value - data image-data
-                    //if we want put last moment recording - point[n] = 0
 
                     var point = new Array();
-
-                    function startRecord() {
-                         point[Math.ceil(video.currentTime)] = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                         $('#start_record').attr('disabled', 'disabled');
-                         $('#stop_record').removeAttr('disabled');
-                    }
-
-                    function stopRecord() {
-
-                         $('#start_record').removeAttr('disabled');
-                         $('#stop_record').attr('disabled', 'disabled');
-                    }
 
                     function clearAnnotation() {
                         ctx.clearRect (0 , 0 , canvas.width ,canvas.height);
@@ -55,10 +39,10 @@
                          var key = Math.ceil(video.currentTime);
 
                          if (video.paused || video.ended) {
+                             $('#clear').removeAttr('disabled');
+
                              return false
                          }
-
-                         console.log("Element: ", key, point[key]);
 
                          if (point[key]) {
                              ctx.putImageData(point[key], 0, 0);
@@ -69,24 +53,12 @@
                         return true;
                     }
 
-                    video.onplay = function() {
-                        var key = Math.ceil(video.currentTime);
-                        point[key] = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                        console.log("Element", key);
-                        listen();
-                        video.paused = true;
-                    }
-
-                    video.onended = function() {
-                        clearAnnotation();
-                    }
-
                     function draw_pencil() {
                         var canvas_pencil = $('#pencil').get(0);
                         canvas_pencil.width = 16;
                         canvas_pencil.height = 16;
                         var context = canvas_pencil.getContext('2d');
-                        //becose div has size 16*16
+                        
                         var centerX = 8;
                         var centerY = 8;
                         var radius = Math.ceil($('#size1 option:selected').val() / 2);
@@ -100,32 +72,31 @@
                     }
 
                     $(document).ready(function(){
-
-                        $('#video_wrap').css('width', videoWidth);
-                        $('#video_wrap').css('height', videoHeight);
-
-                        $('#draw_window').attr('width', videoWidth);
-                        $('#draw_window').attr('height', videoHeight);
                     
                         var video = $('#draw_window').get(0);
-                            video.src = 'mousepointer.ogv';
+                            video.src = 'CodemindersOffice.m4v';
                             video.id = 'draw_window';
                             video.controls = true;
 
+                        $("#draw_window").bind('play', function(){
 
-                        canvas.width = videoWidth;
-                        //left space for manage panel
-                        canvas.height = videoHeight  - 27;
+                            $('#clear').attr('disabled', 'disabled');
 
-                        Canva.init('canvas', canvas.width, canvas.height);
-                        Canva.selectedColor = $('#color1').attr('value');
-                        Canva.selectedWidth = $('#size1 option:selected').val();
-                        Canva.tool = Pencil;
-                        $('#erase1').css('opacity', '1')
-                        $('#color1').colorPicker();
-                        draw_pencil();
+                            var key = Math.ceil(video.currentTime);
+                            point[key] = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            listen();
+                        })
+
+                        $("#draw_window").bind('ended', function(){
+                            clearAnnotation();
+                            video.play();
+                            video.pause();
+                        })
 
                         
+                        $('#color1').colorPicker();
+                        defaultSettings();
+
                         $('#color1').change(function(){
                             Canva.selectedColor = $(this).attr('value');
                             draw_pencil();
@@ -147,6 +118,20 @@
 
                         })
 
+                        $('ul li a').click(function(){
+                            point.length = 0;
+
+                            video.src = $(this).html();
+                            video.load();
+                        })
+
+                        $(video).bind("loadedmetadata", function () {
+
+                            canvas.width = this.videoWidth;
+                            canvas.height =  this.videoHeight - (0.12 * this.videoHeight);
+
+                        });
+
                     })
 
                     $('#clear').click(function(){
@@ -154,11 +139,22 @@
                     })
 
                     function defaultSettings() {
-                        canvas.width = videoWidth;
-                        canvas.height = videoHeight  - 27;
 
-                        Canva.init('canvas', canvas.width, canvas.height);
+                        Canva.init('canvas', canvas.width, canvas.height, 'draw_window');
                         point.length = 0;
+
+                        $('#color1').val('#000080');
+                        $('#color1').change();
+                        Canva.selectedColor = $('#color1').attr('value');
+
+                        $('#size1 [value="6"]').attr('selected', 'selected');
+                        Canva.selectedWidth = $('#size1 option:selected').val();
+                        
+                        Canva.tool = Pencil;
+                        $('#erase1').css('opacity', '1')
+                        
+                        draw_pencil();
+
                     }
                     
                 </script>
@@ -166,9 +162,9 @@
             <div id ="manage_wrap">
                 <form name="save_image" action="POST">
                     <fieldset>
-                        <legend>Setting:</legend>
+                        <legend>Settings:</legend>
 
-                            <div id="picker"><label for="color1">Color </label> <input id="color1" type="text" name="color1" value="#333399" /> </div>
+                            <div id="picker"><label for="color1">Color </label> <input id="color1" type="text" name="color1" value="#000080" /> </div>
 
                             <div class="clear"></div>
                             <div id="size">
@@ -206,8 +202,21 @@
                             <div class="clear"></div>
                             <button id="clear" name ="clear" type="button" onClick="clearAnnotation()">Clear</button>
                             <button id="default" name ="default" type="button" onClick="defaultSettings()">Default</button>
+
                       </fieldset>
                 </form>
+
+                <fieldset>
+                        <legend>Video:</legend>
+
+                        <ul>
+                            <li><a href="#" >CodemindersOffice.m4v</a></li>
+                            <li><a href="#" >mousepointer.ogv</a></li>
+                            <li><a href="#" >bunny.webm</a></li>
+                        </ul>
+                            
+              </fieldset>
+
             </div>        
     </body>
 
